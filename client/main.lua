@@ -1,8 +1,19 @@
---[[
+ --[[
 
-  ESX RP Chat
-
+  $$\      $$\           $$\                   $$\                         
+$$ | $\  $$ |          $$ |                  $$ |                        
+$$ |$$$\ $$ | $$$$$$\  $$$$$$$\   $$$$$$$\ $$$$$$\    $$$$$$\   $$$$$$\  
+$$ $$ $$\$$ |$$  __$$\ $$  __$$\ $$  _____|\_$$  _|  $$  __$$\ $$  __$$\ 
+$$$$  _$$$$ |$$$$$$$$ |$$ |  $$ |\$$$$$$\    $$ |    $$$$$$$$ |$$ |  \__|
+$$$  / \$$$ |$$   ____|$$ |  $$ | \____$$\   $$ |$$\ $$   ____|$$ |      
+$$  /   \$$ |\$$$$$$$\ $$$$$$$  |$$$$$$$  |  \$$$$  |\$$$$$$$\ $$ |      
+\__/     \__| \_______|\_______/ \_______/    \____/  \_______|\__|      
+                                                                         
+                                                                         
+                                                                         
 --]]
+
+
 
 local UserGroup
 
@@ -44,18 +55,31 @@ AddEventHandler('sendProximityMessageDo', function(id, name, message)
   end
 end)
 
+function GetPlayers()
+    local players = {}
+    for i = 0, 31 do
+        if NetworkIsPlayerActive(i) then
+            players[#players + 1] = i
+        end
+    end
+    return players
+end
+
 RegisterNetEvent('poke_rpchat:sendProximityMessageB')
 AddEventHandler('poke_rpchat:sendProximityMessageB', function(playerId, title, message, color)
-	local player = PlayerId()
+	local source = PlayerId()
 	local target = GetPlayerFromServerId(playerId)
 
-	local playerPed, targetPed = PlayerPedId(), GetPlayerPed(target)
-	local playerCoords, targetCoords = GetEntityCoords(playerPed), GetEntityCoords(targetPed)
+	if target ~= -1 then
+        local sourcePed, targetPed = PlayerPedId(), GetPlayerPed(target)
+        local sourceCoords, targetCoords = GetEntityCoords(sourcePed), GetEntityCoords(targetPed)
 
-	if target == player or #(playerCoords - targetCoords) < 20 then
-        TriggerServerEvent("fuckmylife2", title, message, playerId)
-	end
+        if targetPed == source or #(sourceCoords - targetCoords) < 20 then
+            TriggerServerEvent("fuckmylife2", title, message, playerId)
+        end
+    end
 end)
+
 
 RegisterNetEvent('sendMessageAdmin')
 AddEventHandler('sendMessageAdmin', function(id, name, message)
@@ -67,6 +91,34 @@ AddEventHandler('sendMessageAdmin', function(id, name, message)
 			TriggerServerEvent("fuckmylife", name, message)
 		elseif UserGroup ~= 'user' and pid ~= myId then
 			TriggerServerEvent("fuckmylife", name, message)
+		end
+  end)
+end)
+
+
+RegisterNetEvent('sendRelyMessage')
+AddEventHandler('sendRelyMessage', function(id, target, name, message)
+    print(target)
+    local myId = PlayerId()
+    local pid = GetPlayerFromServerId(id)
+		UserGroup = Group
+		if pid == myId then
+			TriggerServerEvent("sendtoownplayer", name, message)
+		elseif pid ~= myId then
+			TriggerServerEvent("sendreplytoplayer", target, name, message)
+		end
+end)
+
+RegisterNetEvent('sendMessageAdmin2')
+AddEventHandler('sendMessageAdmin2', function(id, name, message)
+    local myId = PlayerId()
+    local pid = GetPlayerFromServerId(id)
+	ESX.TriggerServerCallback('esx_chatforadmin:GetGroup', function(Group)
+		UserGroup = Group
+		if pid == myId then
+			TriggerServerEvent("sendtoownplayer2", name, message)
+		elseif UserGroup ~= 'user' and pid ~= myId then
+			TriggerServerEvent("fuckmylife3", id, name, message)
 		end
   end)
 end)
@@ -93,25 +145,57 @@ AddEventHandler('2', function(playerId, playerName, msg, type, targetCoords)
         end
         TriggerEvent('chat:addMessage', {
             template = '<div style="padding: 0.5vw; margin-top: 0.05vw; margin-bottom: 0.05vw; background-color: rgba(' .. color .. ', 0.8); border-radius: 3px;" class="testing animated zoomIn delay-2s"><i class="fas fa-globe"></i> <b style="font-weight:700;">' .. chattype .. ' @ {0}</b>: {1}</div>',
-            args = {playerName, msg}
         })
 	end
 end)
 
---[[
-AddEventHandler('esx-qalle-chat:me', function(id, name, message)
-    local myId = PlayerId()
-    local pid = GetPlayerFromServerId(id)
+Citizen.CreateThread(function()
+    TriggerEvent('chat:addSuggestion', '/mobilepay', 'Betal en anden spiller vha. ID', {
+        {name = "ID", help = "Spillerens ID"},
+        {name = "Beløb", help = "Beløbet du vil overføre til personens konto"}
+    })
+end)
 
-    if pid == myId then
-        TriggerEvent('chat:addMessage', {
-            template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(86, 125, 188, 0.6); border-radius: 3px;"><i class="fas fa-user-circle"></i> {0}:<br> {1}</div>',
-            args = { name, message }
-        })
-    elseif GetDistanceBetweenCoords(GetEntityCoords(GetPlayerPed(myId)), GetEntityCoords(GetPlayerPed(pid)), true) < 15.4 then
-        TriggerEvent('chat:addMessage', {
-            template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(86, 125, 188, 0.6); border-radius: 3px;"><i class="fas fa-user-circle"></i> {0}:<br> {1}</div>',
-            args = { name, message }
-        })
-    end
-end)--]]
+Citizen.CreateThread(function()
+    TriggerEvent('chat:addSuggestion', '/removecomp', 'Fjern dine attachments', {
+        {name = "Type", help = "silencer/scope/flashlight/clip/yusuf"},
+    })
+end)
+
+Citizen.CreateThread(function()
+    TriggerEvent('chat:addSuggestion', '/removeammo', 'Fjern ammunition', {
+        {name = "Antal", help = "Antal"},
+    })
+end)
+
+Citizen.CreateThread(function()
+    TriggerEvent('chat:addSuggestion', '/removevest', 'Fjern skudsikkervest')
+end)
+
+Citizen.CreateThread(function()
+    TriggerEvent('chat:addSuggestion', '/toggleblip', 'Fjern/Tilføj GPS')
+end)
+
+Citizen.CreateThread(function()
+    TriggerEvent('chat:addSuggestion', '/anker', 'Sænk/Hæv GPS')
+end)
+
+Citizen.CreateThread(function()
+    TriggerEvent('chat:addSuggestion', '/a emsbag', 'Få en førstehjælpskasse frem')
+end)
+
+Citizen.CreateThread(function()
+    TriggerEvent('chat:addSuggestion', '/a', 'Fjern førstehjælpskasse')
+end)
+
+
+ --[[
+  _____                  _  ____  _   _          
+ |  __ \                (_)/ __ \| \ | |         
+ | |__) |_ _ _ __   __ _ _| |  | |  \| |___  ___ 
+ |  ___/ _` | '_ \ / _` | | |  | | . ` / __|/ _ \
+ | |  | (_| | |_) | (_| | | |__| | |\  \__ \  __/
+ |_|   \__,_| .__/ \__,_| |\____/|_| \_|___/\___|
+            | |        _/ |                      
+            |_|       |__/                                                                                            
+--]]
