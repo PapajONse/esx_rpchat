@@ -54,12 +54,6 @@ end
 -- end)
 
 
---[[
-
-  Made with love by Cheleber, you can join my RP Server here: www.grandtheftlusitan.com
-  You can add this lines do your esx_rpchat.
-
---]]
 
 ESX 						   = nil
 local Group 
