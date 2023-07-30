@@ -11,9 +11,8 @@ $$  /   \$$ |\$$$$$$$\ $$$$$$$  |$$$$$$$  |  \$$$$  |\$$$$$$$\ $$ |
                                                                                                                                                                                                                         
 --]]
 
-ESX = nil
+ESX = exports['es_extended']:getSharedObject()
 
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 local perms = {}
 
 function getIdentity(source)
@@ -54,11 +53,16 @@ end
 -- end)
 
 
+--[[
 
-ESX 						   = nil
-local Group 
+  Made with love by Cheleber, you can join my RP Server here: www.grandtheftlusitan.com
+  You can add this lines do your esx_rpchat.
 
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+--]]
+
+ESX = nil
+
+ESX = exports['es_extended']:getSharedObject()
 
 ESX.RegisterServerCallback('esx_chatforadmin:GetGroup', function(source, cb)
     local player = ESX.GetPlayerFromId(source)
